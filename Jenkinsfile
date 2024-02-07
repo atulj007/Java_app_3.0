@@ -75,44 +75,29 @@ pipeline{
                }
             }
         }
-        stage('Jfrog Server : Connect '){
-            steps{
-              rtServer (
-                  id: "Artifactory",
-                  url: 'http://54.85.145.2:8082/artifactory',
-                  username: 'admin',
-                    password: 'Achelles_79',
-                    bypassProxy: true,
-                     timeout: 300
-                  )
-            }
-        }
-        stage('Jfrog Artifact : Upload '){
-         
-            steps{
-              rtServer (
-                  serverId: "Artifactory" ,
-                  spec: '''{
-                  "files": [
-                  {
-                      "pattern": "./targets/*.war"
-                      "target": "example-repo-local"
+         stage('Artifactory Publish to JFrog') {
+             when { expression {  params.action == 'create' } }
+            steps {
+                script {
+                 echo "Attempting to Push the Artifacts to Jfrog Repository"
+                  withCredentials([usernamePassword(
+                      credentialsId: "Artifactory",
+                      usernameVariable: "USER",
+                      passwordVariable: "PASS"
+                      
+                  ) ] ) {
+                      //Using Artifactory username and password variables
+
+                      echo "Username: $USER"
+                      echo "Password: $PASS"
+
+                      def curlCommand = "curl -u '${USER}:${PASS}'" -T target/*.jar ${params.ArtifactoryURL}/artifactory/example-repo-local/"
+                      echo "Executing Curl Command: $curlCommand"
+                      sh curlCommand
                   }
-                  ]
-                  }''',
-                  
-                  )
+                }
             }
         }
-         stage('Jfrog Artifact : Public Build Info '){
-         
-            steps{
-               rtPublishBuildInfo (
-                   serverId: "Artifactory"
-               )  
-            }
-        }
-        
         stage('Docker Image Build'){
          when { expression {  params.action == 'create' } }
             steps{
