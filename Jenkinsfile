@@ -76,7 +76,6 @@ pipeline{
             }
         }
         stage('Jfrog Server : Connect '){
-         when { expression {  params.action == 'create' } }
             steps{
               rtServer (
                   id: "Artifactory",
@@ -84,12 +83,12 @@ pipeline{
                   username: 'admin',
                     password: 'Achelles_79',
                     bypassProxy: true,
-                    timeout: 300
+                     timeout: 300
                   )
             }
         }
         stage('Jfrog Artifact : Upload '){
-         when { expression {  params.action == 'create' } }
+         
             steps{
               rtServer (
                   serverId: "Artifactory" ,
@@ -106,7 +105,7 @@ pipeline{
             }
         }
          stage('Jfrog Artifact : Public Build Info '){
-         when { expression {  params.action == 'create' } }
+         
             steps{
                rtPublishBuildInfo (
                    serverId: "Artifactory"
