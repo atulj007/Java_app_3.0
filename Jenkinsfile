@@ -94,10 +94,10 @@ pipeline{
                       def curlCommand = "curl -u '${USER}:${PASS}'" -T target/*.jar ${params.ArtifactoryURL}/artifactory/example-repo-local/"
                       echo "Executing Curl Command: $curlCommand"
                       sh curlCommand
-                  }
-                }
-            }
-        }
+                    }
+                 }
+             }
+         }
         stage('Docker Image Build'){
          when { expression {  params.action == 'create' } }
             steps{
